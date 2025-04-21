@@ -1,0 +1,53 @@
+﻿@model EntityLayer.IlgiAlanlari
+@{
+    ViewBag.Title = "İlgi Alanı Güncelleme";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>İlgi Alanı Güncelleme</h2>
+
+@using (Html.BeginForm("AdminIlgiAlanGuncelle", "IlgiAlanlari", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.IlgiAlaniID)
+
+    <div class="form-group">
+        <label for="IlgiAlaniAdi">İlgi Alanı Adı:</label>
+        <input type="text" class="form-control" id="IlgiAlaniAdi" name="IlgiAlaniAdi" value="@Model.IlgiAlaniAdi" required />
+        @Html.ValidationMessageFor(model => model.IlgiAlaniAdi, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label for="KategoriID">Kategori:</label>
+        <select name="KategoriID" class="form-control" id="KategoriID">
+            @foreach (var kategori in ViewBag.Kategoriler as List<SelectListItem>)
+            {
+                <option value="@kategori.Value" @(kategori.Value == Model.KategoriID.ToString() ? "selected" : "")>@kategori.Text</option>
+            }
+        </select>
+        @Html.ValidationMessageFor(model => model.KategoriID, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label for="OnayDurum">Onay Durumu:</label>
+        <select name="OnaylanmaDurumu" class="form-control" id="OnayDurum">
+            <option value="1" @(Model.OnaylanmaDurumu == EntityLayer.OnayDurumu.Onayli ? "selected" : "")>Onaylı</option>
+            <option value="0" @(Model.OnaylanmaDurumu == EntityLayer.OnayDurumu.OnayliDegil ? "selected" : "")>Onaysız</option>
+            <option value="2" @(Model.OnaylanmaDurumu == EntityLayer.OnayDurumu.OnayBekliyor ? "selected" : "")>Onay Bekliyor</option>
+        </select>
+        @Html.ValidationMessageFor(model => model.OnaylanmaDurumu, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-bordo">Güncelle</button>
+}
+<style>
+  
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+</style>

@@ -1,0 +1,182 @@
+﻿@using EntityLayer
+@model List<Mesajlar>
+@{
+    ViewBag.Title = "GeriBidirim";
+    Layout = "~/Views/Shared/KullaniciLayout.cshtml";
+}
+
+@{
+    var kullanicilar = ViewBag.TumKullanicilar as List<Kullanicilar>;
+    var girisYapanId = Session["KullaniciID"] as int?;
+    var kullaniciMesajSiralama = kullanicilar
+         .Select(k => new
+         {
+             Kullanici = k,
+             SonMesaj = Model
+                 .Where(m => m.GondericiID == k.KullaniciID || m.AliciID == k.KullaniciID)
+                 .OrderByDescending(m => m.GonderimZamani)
+                 .FirstOrDefault()
+         })
+         .OrderByDescending(x => x.SonMesaj?.GonderimZamani ?? DateTime.MinValue)
+         .ToList();
+    var adminler = ViewBag.Adminler as List<Kullanicilar>;
+
+}
+
+<div class="container">
+    @if (!Model.Any() && adminler == null)
+    {
+        <div class="chat-panel" id="chatPanel" style="display: none;"></div>
+    }
+    else
+    {
+        <div class="chat-panel" id="chatPanel">
+            <div class="panel-header">
+                <div class="etkinlik-header">
+                    <img src="@(Url.Content("~/Images/logo.png")))"
+                         alt="Etkinlik Görseli" class="etkinlik-img" />
+                    <h5 class="etkinlik-name">Geri Bildirim Sayfası</h5>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="message-container">
+                    @foreach (var mesaj in Model)
+                    {
+                        var gonderici = kullanicilar?.FirstOrDefault(k => k.KullaniciID == mesaj.GondericiID);
+                        <div class="message-row @(girisYapanId == mesaj.GondericiID ? "self-message" : "other-message")">
+                            @if (girisYapanId != mesaj.GondericiID)
+                            {
+                                <div class="user-profile">
+                                    <img src="@(string.IsNullOrEmpty(gonderici?.ProfilFotografi) ? Url.Content("~/Images/bosprofil.png") : Url.Content(gonderici.ProfilFotografi))"
+                                         alt="Profil" class="profile-img" />
+                                </div>
+                            }
+
+                            <div class="message-bubble">
+                                @if (girisYapanId != mesaj.GondericiID)
+                                {
+                                    <p class="message-sender">@gonderici.Ad @gonderici.Soyad</p>
+                                   
+                                }
+                                else
+                                {
+                                    <p class="message-sender">Sen</p>
+                                   
+                                }
+                                <p class="message-text">@mesaj.MesajMetni</p>
+                                <span class="message-time">@mesaj.GonderimZamani.ToString("HH:mm dd/MM/yyyy")</span>
+                            </div>
+                            @if (girisYapanId == mesaj.GondericiID)
+                            {
+                                <div class="user-profile">
+                                    <img src="@(string.IsNullOrEmpty(gonderici?.ProfilFotografi) ? Url.Content("~/Images/bosprofil.png") : Url.Content(gonderici.ProfilFotografi))"
+                                         alt="Profil" class="profile-img" />
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @using (Html.BeginForm("GeriBildirimMesajGonder", "Mesajlar", FormMethod.Post))
+                {
+                    <div class="message-input">
+                        @if (adminler == null)
+                        {
+                            <p>Etkinlik bilgisi yüklenemedi!</p>
+                        }
+                        else
+                        {
+                            @Html.Hidden("adminler",adminler)
+                        }
+
+                        <textarea id="MesajMetni" name="MesajMetni" class="form-control" rows="1" placeholder="Bir mesaj yaz..."></textarea>
+                        <button type="submit" class="btn send-button">Gönder</button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .chat-panel {
+        flex-grow: 1;
+        width: 600px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+        max-width: calc(100% - 220px);
+        height: 90vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        background-color: #430202;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .message-bubble {
+        display: flex;
+        position: relative;
+        padding: 10px;
+        background-color: #f1f1f1;
+        border-radius: 8px;
+        max-width: 70%;
+        word-wrap: break-word;
+        flex-wrap: nowrap;
+        white-space: normal;
+    }
+
+    .message-sender {
+        font-weight: bold;
+    }
+
+    .message-text {
+        margin-top: 5px;
+    }
+
+    .message-time {
+        font-size: 12px;
+        color: gray;
+        text-align: right;
+    }
+
+    .message-input {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .send-button {
+        background-color: #430202;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+        .send-button:hover {
+            background-color: #5b0f14;
+        }
+</style>

@@ -1,0 +1,184 @@
+﻿
+@{
+    Layout = null;
+}
+@{
+    var mesaj = TempData["Mesaj"] as string;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>KullaniciGirisi</title>
+    <link href="~/Content/styless.css" rel="stylesheet" />
+    <link href="~/Content/MultiSelect.css" rel="stylesheet" />
+
+
+</head>
+<body>
+    <div class="container-login">
+        <div class="animation">
+            <lottie-player src="https://lottie.host/898ed65b-10c1-4955-b42e-e33e6c07cf74/A3LSq8zTLr.json"
+                           background="transparent" speed="1"
+                           direction="1" playMode="bounce"
+                           loop autoplay>
+            </lottie-player>
+        </div>
+        <div class="mainlogin">
+            <div class="form-box-login">
+                <div class="button-box-login">
+                    <div id="Btn"></div>
+                    <button type="button" class="toggle-btn-login" onclick="login()">Log In</button>
+                    <button type="button" class="toggle-btn-login" onclick="signin()">Sign In</button>
+                </div>
+
+
+                @using (Html.BeginForm("KullaniciGirisi", "Home", FormMethod.Post))
+                {
+                    <div id="Login" class="input-group">
+
+                        @if (TempData["Message"] != null)
+                        {
+                            <br />
+                            <div class="alert-@TempData["MessageType"]-text">
+                                @TempData["Message"]
+                            </div>
+                            <br />
+                        }
+                        @if (!string.IsNullOrEmpty(mesaj))
+                        {
+                            <div class="alert-red-text">
+                                @mesaj
+                            </div>
+                        }
+                        <input type="text" class="input-field" placeholder="Kullanıcı Adı giriniz." name="KullaniciAdi" required />
+                        <input type="password" class="input-field" placeholder="Şifrenizi giriniz." name="Sifre" required />
+                        <a href="#" onclick="sifreyenile()">Şifremi Unuttum</a>
+                        <button type="submit" class="submit-btn">Login</button>
+                    </div>
+                }
+                @using (Html.BeginForm("KullaniciKayit", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <div id="SignIn" class="input-group" style="display: none; top: 150px;">
+                        <input type="text" class="input-field" placeholder="Kullanıcı Adı giriniz." name="KullaniciAdi" required />
+                        <input type="password" class="input-field" placeholder="Şifrenizi giriniz." name="Sifre" required />
+                        <input type="email" class="input-field" placeholder="Email giriniz." name="Eposta" required />
+                        <input type="text" class="input-field" placeholder="Adınızı giriniz." name="Ad" required />
+                        <input type="text" class="input-field" placeholder="Soyadınızı giriniz." name="Soyad" required />
+                        <a href="#">Kayıt olarak, şartlar, veri politikası ve çerez politikasına onay veriyorsunuz.</a>
+
+                        <button type="submit" class="submit-btn" onclick="signin2()">Continue</button>
+                    </div>
+
+                    <div id="SignIn2" class="input-group" style="display: none; top: 120px;">
+                        <select class="input-field" name="Cinsiyet" id="Cinsiyet" required>
+                            <option value="" disabled selected>Cinsiyet Seçiniz</option>
+                            <option value="Erkek">Erkek</option>
+                            <option value="Kadın">Kadın</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                        <input type="date" class="input-field" placeholder="Doğum tarihinizi giriniz." name="DogumTarihi" required />
+                        <input type="text" class="input-field" placeholder="Telefon numaranızı giriniz." name="TelefonNumarasi" required />
+                        <input type="text" class="input-field" placeholder="Konum Giriniz" name="Konum" required />
+
+                        <input type="file" name="ProfilFotografi">
+
+                        <br />
+                        <select id="interests" name="secilenIlgiAlanlari" multiple="multiple" class="form-control">
+                            @if (ViewBag.IlgiAlanlari != null)
+                            {
+                                foreach (var ilgiAlani in ViewBag.IlgiAlanlari)
+                                {
+                                    <option value="@ilgiAlani.IlgiAlaniID">@ilgiAlani.IlgiAlaniAdi</option>
+                                }
+                            }
+                        </select>
+                        <br />
+                        <button type="submit" class="submit-btn">Sign In</button>
+                    </div>
+                }
+                @using (Html.BeginForm("SifreYenileme", "Home", FormMethod.Post))
+                {
+                    <div id="SifreYenile" class="input-group" style="display: none; top: 180px;">
+                        <input type="text" class="input-field" placeholder="Kullanıcı Adı giriniz." name="KullaniciAdi" required />
+                        <input type="email" class="input-field" placeholder="Email giriniz." name="Eposta" required />
+                        <br />
+                        <br />
+                        <button type="submit" class="submit-btn">Şifre Gönder</button>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/&#64;lottiefiles/lottie-player@1.7.0/dist/lottie-player.js"></script>
+    <script src="~/Content/MultiSelect.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new MultiSelect(document.getElementById('interests'), {
+                placeholder: 'İlgi Alanlarınızı Seçin',
+                max: 5,
+                search: true,
+                selectAll: true
+            });
+        });
+       
+    </script>
+    <script>
+        var loginx = document.getElementById("Login");
+        var signinx = document.getElementById("SignIn");
+        var btnx = document.getElementById("Btn");
+        var continuex = document.getElementById("SignIn2")
+        var sifreyenilex = document.getElementById("SifreYenile");
+
+        function signin() {
+            document.querySelectorAll("#Login input").forEach(input => input.value = "");
+            loginx.style.left = "-400px";
+            signinx.style.left = "50px";
+            btnx.style.left = "110px";
+            signinx.style.display = "block";
+            continuex.style.display = "none";
+            sifreyenilex.style.display = "none";
+        }
+        function login() {
+            document.querySelectorAll("#SignIn input").forEach(input => input.value = "");
+            document.querySelectorAll("#SignIn2 input").forEach(input => input.value = "");
+            loginx.style.left = "50px";
+            signinx.style.left = "450px";
+            continuex.style.left = "450px";
+            btnx.style.left = "0px";
+            sifreyenilex.style.display = "none";
+            loginx.style.display = "block";
+        }
+        function signin2(event) {
+            signinx.style.display = "none";
+            continuex.style.display = "block"
+            loginx.style.left = "-400px";
+            signinx.style.left = "-400px";
+            continuex.style.left = "50px";
+            btnx.style.left = "110px";
+            sifreyenilex.style.display = "none";
+        }
+        function sifreyenile() {
+            document.querySelectorAll("#Login input").forEach(input => input.value = "");
+            sifreyenilex.style.left = "50px";
+            btnx.style.left = "0px";
+            signinx.style.display = "none";
+            continuex.style.display = "none";
+            loginx.style.display = "none";
+            sifreyenilex.style.display = "block";
+        }
+
+    </script>
+
+
+
+</body>
+</html>
+<style>
+    .alert-red-text {
+        color: #430202; 
+    }
+</style>

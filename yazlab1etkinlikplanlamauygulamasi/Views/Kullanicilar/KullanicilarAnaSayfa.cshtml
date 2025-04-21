@@ -1,0 +1,473 @@
+﻿@using EntityLayer
+
+@{
+    ViewBag.Title = "KullanicilarAnaSayfa";
+    Layout = "~/Views/Shared/KullaniciLayout.cshtml";
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+}
+
+<div id="map" style="height: 400px; width: 100%;"></div>
+<div id="info-panel" style="position: absolute; top: 50px; right: 20px; background-color: white; padding: 5px 10px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); z-index: 5; font-size: 12px; max-width: 180px;">
+    <h4 style="font-size: 14px; margin: 0; padding-bottom: 5px;">Marker Anlamları</h4>
+    <ul id="marker-info-list" style="list-style: none; padding: 0; margin: 0;">
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png" width="15" height="15"> Konumunuz</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png" width="15" height="15"> İlgi Alanlarına Ait Etkinlikler</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png" width="15" height="15"> Benzer İlgi Alanlarına Ait Etkinlikler</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" width="15" height="15"> Katılım Sağladığı Etkinliklere Benzer Etkinlikler</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png" width="15" height="15"> Konuma Göre Etkinlikler</li>
+    </ul>
+</div>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0S5pBRUFR04U15319_piNxqF14j691nE&callback=initMap"
+        type="text/javascript"></script>
+@{
+    var kullaniciAdresi = Session["KullaniciAdresi"]?.ToString() ?? "Varsayılan Adres";
+}
+<script>
+    var map;
+    var geocoder;
+    var redIcon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
+    var blueIcon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+    var greenIcon = "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
+    var yellowIcon = "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+    var purpleIcon = "https://maps.google.com/mapfiles/ms/icons/purple-dot.png";
+
+    function initMap() {
+        var defaultLocation = { lat: 38.9637, lng: 35.2433 };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 5,
+            center: defaultLocation,
+            zoomControl: true,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            scaleControl: false,
+            rotateControl: false
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        var kullaniciAdresi = '@Html.Raw(Json.Encode(kullaniciAdresi))';
+
+        geocoder.geocode({ 'address': kullaniciAdresi }, function (results, status) {
+            if (status === 'OK') {
+                var location = results[0].geometry.location;
+                map.setCenter(location);
+                map.setZoom(10);
+
+                new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: kullaniciAdresi,
+                    icon: purpleIcon
+                });
+            } else {
+                alert("Konum bulunamadı: " + status);
+            }
+        });
+
+        @if (ViewBag.IlgiAlanlarinaGoreOneriler != null && ViewBag.IlgiAlanlarinaGoreOneriler.Count > 0)
+        {
+            foreach (var etkinlik in ViewBag.IlgiAlanlarinaGoreOneriler)
+            {
+                var etkinlikAdi = Json.Encode(etkinlik.EtkinlikAdi);
+                var etkinlikKonumu = Json.Encode(etkinlik.EtkinlikKonumu);
+                var etkinlikResmi = Json.Encode(etkinlik.EtkinlikResmi);
+                var etkinlikID= Json.Encode(etkinlik.EtkinlikID);
+
+                <text>
+        geocoder.geocode({ 'address': '@Html.Raw(Json.Encode(etkinlikKonumu))' }, function (results, status) {
+            if (status === 'OK') {
+                var location = results[0].geometry.location;
+
+                var marker = new google.maps.Marker({
+                    id: '@Html.Raw(etkinlikID)',
+                    position: location,
+                    map: map,
+                    title: '@Html.Raw(Json.Encode(etkinlikAdi))',
+                    icon: greenIcon
+                });
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: `
+                                <div class=".gm-style-iw button.gm-ui-hover-effect" style="font-size: 12px; padding: 5px; max-width: 200px;">
+                                    <h4>${'@Html.Raw(Json.Encode(etkinlikAdi))'.replace(/"/g, '')}</h4>
+                                   <p>${'@Html.Raw(Json.Encode(etkinlikKonumu))'.replace(/"/g, '')}</p>
+                               </div>
+                            `
+                });
+                marker.addListener('mouseover', function () {
+                    infowindow.open(map, marker);
+                });
+
+                marker.addListener('mouseout', function () {
+                    infowindow.close();
+                });
+                marker.addListener('click', function () {
+                    infowindow.open(map, marker);
+                    window.location.href = '@Url.Action("EtkinlikDetay", "Kullanicilar", new { etkinlikID = etkinlikID })';
+                });
+
+            } else {
+                console.error("Konum bulunamadı: " + '@Html.Raw(Json.Encode(etkinlikKonumu))');
+            }
+        });
+                </text>
+            }
+        }
+
+        @if (ViewBag.BenzerIlgiAlaninaGoreOneriler != null && ViewBag.BenzerIlgiAlaninaGoreOneriler.Count > 0)
+        {
+            foreach (var etkinlik in ViewBag.BenzerIlgiAlaninaGoreOneriler)
+            {
+                var etkinlikAdi = Json.Encode(etkinlik.EtkinlikAdi);
+                var etkinlikKonumu = Json.Encode(etkinlik.EtkinlikKonumu);
+                var etkinlikResmi = Json.Encode(etkinlik.EtkinlikResmi);
+                var etkinlikID = Json.Encode(etkinlik.EtkinlikID);
+
+                <text>
+        geocoder.geocode({ 'address': '@Html.Raw(Json.Encode(etkinlikKonumu))' }, function (results, status) {
+            if (status === 'OK') {
+                var location = results[0].geometry.location;
+
+                var marker = new google.maps.Marker({
+                    id: '@Html.Raw(etkinlikID)',
+                    position: location,
+                    map: map,
+                    title: '@Html.Raw(Json.Encode(etkinlikAdi))',
+                    icon: redIcon
+                });
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: `
+                                <div class=".gm-style-iw button.gm-ui-hover-effect" style="font-size: 12px; padding: 5px; max-width: 200px;">
+                                     <h4>${'@Html.Raw(Json.Encode(etkinlikAdi))'.replace(/"/g, '')}</h4>
+                                     <p>${'@Html.Raw(Json.Encode(etkinlikKonumu))'.replace(/"/g, '')}</p>
+                                  </div>
+                            `
+                });
+                marker.addListener('mouseover', function () {
+                    infowindow.open(map, marker);
+                });
+
+                marker.addListener('mouseout', function () {
+                    infowindow.close();
+                });
+                marker.addListener('click', function () {
+                    infowindow.open(map, marker);
+                    window.location.href = '@Url.Action("EtkinlikDetay", "Kullanicilar", new { etkinlikID = etkinlikID })';
+                });
+
+
+            } else {
+                console.error("Konum bulunamadı: " + '@Html.Raw(Json.Encode(etkinlikKonumu))');
+            }
+        });
+                </text>
+            }
+        }
+        @if (ViewBag.KatildiginaGoreOneriler != null && ViewBag.KatildiginaGoreOneriler.Count > 0)
+        {
+            foreach (var etkinlik in ViewBag.KatildiginaGoreOneriler)
+            {
+                var etkinlikAdi = Json.Encode(etkinlik.EtkinlikAdi);
+                var etkinlikKonumu = Json.Encode(etkinlik.EtkinlikKonumu);
+                var etkinlikResmi = Json.Encode(etkinlik.EtkinlikResmi);
+                var etkinlikID = Json.Encode(etkinlik.EtkinlikID);
+
+         <text>
+        geocoder.geocode({ 'address': '@Html.Raw(Json.Encode(etkinlikKonumu))' }, function (results, status) {
+            if (status === 'OK') {
+                var location = results[0].geometry.location;
+
+                var marker = new google.maps.Marker({
+                    id: '@Html.Raw(etkinlikID)',
+                    position: location,
+                    map: map,
+                    title: '@Html.Raw(Json.Encode(etkinlikAdi))',
+                    icon: blueIcon
+                });
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: `
+                         <div class=".gm-style-iw button.gm-ui-hover-effect" style="font-size: 12px; padding: 5px; max-width: 200px;">
+                              <h4>${'@Html.Raw(Json.Encode(etkinlikAdi))'.replace(/"/g, '')}</h4>
+                              <p>${'@Html.Raw(Json.Encode(etkinlikKonumu))'.replace(/"/g, '')}</p>
+                        </div>
+                     `
+                });
+                marker.addListener('mouseover', function () {
+                    infowindow.open(map, marker);
+                });
+
+                marker.addListener('mouseout', function () {
+                    infowindow.close();
+                });
+                marker.addListener('click', function () {
+                    infowindow.open(map, marker);
+                    window.location.href = '@Url.Action("EtkinlikDetay", "Kullanicilar", new { etkinlikID = etkinlikID })';
+                });
+
+            } else {
+                console.error("Konum bulunamadı: " + '@Html.Raw(Json.Encode(etkinlikKonumu))');
+            }
+        });
+         </text>
+     }
+    }
+    }
+    google.maps.event.addDomListener(window, 'load', initMap);
+</script>
+<br />
+@if (TempData["uyariMesaj"] != null)
+{
+
+    <div class="alert alert-default-danger"><i class="fas fa-exclamation-triangle alert-uyari-icon"></i> @TempData["uyariMesaj"]</div>
+}
+@if (TempData["onayMesaj"] != null)
+{
+    <div class="alert alert-default-success"><i class="fas fa-check-circle alert-onay-icon"></i> @TempData["onayMesaj"]</div>
+}
+<div class="row">
+    <div class="container">
+        <div class="row mb-4">
+            <h3 class="col-12 text-center mb-3" style="color:seagreen">İlgi Alanına Göre Etkinlikler</h3>
+        </div>
+        @if (ViewBag.IlgiAlanlarinaGoreOneriler != null && ViewBag.IlgiAlanlarinaGoreOneriler.Count > 0)
+        {
+            <div class="row mb-4">
+                
+                @foreach (var etkinlik in ViewBag.IlgiAlanlarinaGoreOneriler)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-img-top" style="background-image: url('@Url.Content("~/" + etkinlik.EtkinlikResmi)');"></div>
+
+                            <div class="card-header text-center">
+                                <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                                    @etkinlik.EtkinlikAdi
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-user" style="margin-right: 10px;"></i>Etkinliği düzenleyen:  @etkinlik.KullaniciID</p>
+                                <p><i class="fas fa-location-arrow" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikKonumu</p>
+                                <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikTarih.ToString("dd MMMM yyyy")</p>
+                                <p><i class="fas fa-clock" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikSaati.ToString(@"hh\:mm")</p>
+
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-end align-items-center">
+
+                                    <a href="@Url.Action("EtkinlikDetay", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo ">
+                                        <i class="fas fa-eye"></i> Görüntüle
+                                    </a>
+                                    <a href="@Url.Action("KullaniciKatildigiEtkinlikKatilimcilar","Katilimcilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo">
+                                        <i class="fas fa-users"></i> Katılımcılar
+                                    </a>
+
+                                    <a href="@Url.Action("EtkinlikKatil", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black" onclick="return confirm('Bu etkinliğe katılmak istediğinizden emin misiniz?');">
+                                        <i class="fas fa-calendar-check "></i> Katıl
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>İlgi alanınıza göre önerilen etkinlik bulunmamaktadır.</p>
+        }
+        <div class="row mb-4">
+            <h3 class="col-12 text-center mb-3" style="color: red;">Benzer İlgi Alanına Göre Etkinlikler</h3>
+        </div>
+        @if (ViewBag.BenzerIlgiAlaninaGoreOneriler != null && ViewBag.BenzerIlgiAlaninaGoreOneriler.Count > 0)
+        {
+            <div class="row mb-4">
+
+                @foreach (var etkinlik in ViewBag.BenzerIlgiAlaninaGoreOneriler)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-img-top" style="background-image: url('@Url.Content("~/" + etkinlik.EtkinlikResmi)');"></div>
+
+                            <div class="card-header text-center">
+                                <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                                    @etkinlik.EtkinlikAdi
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-user" style="margin-right: 10px;"></i>Etkinliği düzenleyen:  @etkinlik.KullaniciID</p>
+                                <p><i class="fas fa-location-arrow" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikKonumu</p>
+                                <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikTarih.ToString("dd MMMM yyyy")</p>
+                                <p><i class="fas fa-clock" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikSaati.ToString(@"hh\:mm")</p>
+
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-end align-items-center">
+
+                                    <a href="@Url.Action("EtkinlikDetay", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo ">
+                                        <i class="fas fa-eye"></i> Görüntüle
+                                    </a>
+                                    <a href="@Url.Action("KullaniciKatildigiEtkinlikKatilimcilar","Katilimcilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo">
+                                        <i class="fas fa-users"></i> Katılımcılar
+                                    </a>
+
+                                    <a href="@Url.Action("EtkinlikKatil", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black" onclick="return confirm('Bu etkinliğe katılmak istediğinizden emin misiniz?');">
+                                        <i class="fas fa-calendar-check "></i> Katıl
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Benzer ilgi alanınıza göre önerilen etkinlik bulunmamaktadır.</p>
+        }
+        <div class="row mb-4">
+            <h3 class="col-12 text-center mb-3" style="color: midnightblue;">Katıldığınız Etkinliklerinize Benzer Etkinlikler</h3>
+        </div>
+        @if (ViewBag.KatildiginaGoreOneriler != null && ViewBag.KatildiginaGoreOneriler.Count > 0)
+        {
+            <div class="row mb-4">
+
+
+                @foreach (var etkinlik in ViewBag.KatildiginaGoreOneriler)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-img-top" style="background-image: url('@Url.Content("~/" + etkinlik.EtkinlikResmi)');"></div>
+
+                            <div class="card-header text-center">
+                                <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                                    @etkinlik.EtkinlikAdi
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-user" style="margin-right: 10px;"></i>Etkinliği düzenleyen:  @etkinlik.KullaniciID</p>
+                                <p><i class="fas fa-location-arrow" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikKonumu</p>
+                                <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikTarih.ToString("dd MMMM yyyy")</p>
+                                <p><i class="fas fa-clock" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikSaati.ToString(@"hh\:mm")</p>
+
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <a href="@Url.Action("EtkinlikDetay", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo ">
+                                        <i class="fas fa-eye"></i> Görüntüle
+                                    </a>
+                                    <a href="@Url.Action("KullaniciKatildigiEtkinlikKatilimcilar","Katilimcilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo">
+                                        <i class="fas fa-users"></i> Katılımcılar
+                                    </a>
+
+                                    <a href="@Url.Action("EtkinlikKatil", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black" onclick="return confirm('Bu etkinliğe katılmak istediğinizden emin misiniz?');">
+                                        <i class="fas fa-calendar-check "></i> Katıl
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Katıldığınız etkinliklerinize benzer önerilen etkinlik bulunmamaktadır.</p>
+        }
+
+
+    </div>
+
+
+    </div>
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .card-img-top {
+        background-size: cover;
+        background-position: center;
+        height: 250px; 
+        border-radius: 5px;
+    }
+
+    .card-footer {
+        padding: 15px;
+    }
+
+    .d-flex {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        gap: 5px; 
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .btn-outline-bordo {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-outline-bordo:hover {
+            background-color: #430202;
+            color: white;
+            border: 2px solid #5b0f14;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white;
+        }
+    .gm-style-iw button.gm-ui-hover-effect {
+        display: none !important;
+    }
+</style>
+

@@ -1,0 +1,160 @@
+﻿@model EntityLayer.EtkinlikKategori
+@{
+    ViewBag.Title = "KategoriGuncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@using (Html.BeginForm("KategoriGuncelle", "EtkinlikKategori", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel">
+                <div class="panel-heading">
+                    <h4>Etkinlik Kategorisi Güncelle</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.KategoriAdi)
+                        @Html.TextBoxFor(m => m.KategoriAdi, new { @class = "form-control", placeholder = "Kategori Adı" })
+                        @Html.ValidationMessageFor(m => m.KategoriAdi)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.KategoriResmi)
+                        <input type="file" class="form-control" id="KategoriResmi" name="KategoriResmi" onchange="gorseliGoster(event)">
+                        @Html.ValidationMessageFor(m => m.KategoriResmi)
+                    </div>
+                   
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.KategoriOnayDurumu)
+                        @Html.DropDownListFor(m => m.KategoriOnayDurumu, new SelectList(new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Onaylı", Value = "true" },
+                            new SelectListItem { Text = "Onaysız", Value = "false" }
+                        }, "Value", "Text"), "Kategori Onay Durumu Seçin", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.KategoriOnayDurumu)
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="YeniIlgiAlani">Yeni İlgi Alanı</label>
+                        <input type="text" id="YeniIlgiAlani" name="YeniIlgiAlani" class="form-control" placeholder="Yeni ilgi alanı ekleyin">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-bordo">Güncelle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="image-preview">
+                <h4>Yüklenen Resim</h4>
+                <img id="imagePreview" src="#" alt="Yüklenen görsel" class="img-fluid" style="display: none;" />
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+        width: 100%;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .panel {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .panel-heading {
+        background-color: #430202;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .image-preview {
+        text-align: center;
+        border: 2px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-top: 20px;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .image-preview h4 {
+            font-size: 16px;
+            color: #430202;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+
+    .image-preview img {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+        }
+</style>
+
+<script>
+   
+    function gorseliGoster(event) {
+        var output = document.getElementById('imagePreview');
+        if (event.target.files && event.target.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                output.src = e.target.result;
+                output.style.display = 'block';
+            }
+
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+</script>
+
+
+
+

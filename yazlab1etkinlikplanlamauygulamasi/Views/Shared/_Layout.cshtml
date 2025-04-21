@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <style>
+        .nav-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+            .nav-item i {
+                margin-right: 1px;
+                color: white;
+            }
+
+        .nav-link {
+            color: white;
+        }
+
+        .dropdown-menu {
+            border: none !important;
+            box-shadow: none !important;
+            background-color: #430202 !important;
+        }
+
+        .dropdown-toggle {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            color: white !important;
+            background-color: #430202 !important;
+        }
+
+        .dropdown-item {
+            border: none !important;
+            color: white !important;
+        }
+
+            .dropdown-item:hover {
+                background-color: #6A1111 !important;
+            }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle:active {
+            background-color: #6A1111 !important;
+        }
+
+        .dropdown-menu.show {
+            background-color: #430202 !important;
+        }
+
+        .dropdown-item:active {
+            color: white !important;
+            background-color: #6A1111 !important;
+        }
+
+        
+      
+       
+    </style>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark" style="background-color: #430202;">
+        <div class="container">
+            <a href="@Url.Action("UygulamaGirisSayfasi", "Home")" class="navbar-brand">
+                <img src="~/Images/logo1.png" alt="PLANORA" style="height: 100%; max-height: 70px; width: auto;" />
+            </a>
+
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <i class="fas fa-home"></i>
+                        @Html.ActionLink("Home", "UygulamaGirisSayfasi", "Home", new { area = "" },
+                            new { @class = "nav-link" })
+                    </li>
+
+                    @*@if (User.IsInRole("Admin"))
+                   {*@
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Kullanıcı Yönetimi
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="@Url.Action("KullanicilarListesi", "WebAdmin")">Kullanıcılar</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("KullaniciEkle", "WebAdmin")">Kullanıcı Ekle</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Etkinlik Yönetimi
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="@Url.Action("Etkinlikler", "WebAdmin")">Etkinlikler</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("EtkinlikEkle", "WebAdmin")">Etkinlik Ekle</a></li>
+                        </ul>
+                    </div>
+
+
+                    @*}*@
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            zehra karabektas
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Ayarlar</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Çıkış</a></li>
+                        </ul>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer class="footer">
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+            dropdownElementList.forEach(function (dropdownToggleEl) {
+                new bootstrap.Dropdown(dropdownToggleEl);
+            });
+        });
+    </script>
+
+</body>
+</html>
+

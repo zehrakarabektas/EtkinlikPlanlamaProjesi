@@ -1,0 +1,139 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.container-login{
+    display: flex;
+    height: 60%; 
+}
+
+.animation {
+    width: 50%;
+    height: 580px;
+    overflow: hidden;
+    position: absolute;
+    margin: 6% auto;
+    padding: 10px;
+}
+.animation2 {
+    width: 100%; 
+    height: 100%; 
+    overflow: hidden;
+    position: absolute;
+    top: 50%; 
+    left: 0;
+    transform: translateY(-60%) translateX(-20%);
+    padding: 20px;
+}
+.mainlogin {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; 
+    height: 100%; 
+    width: 50%; 
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    background-image: url(); 
+    background-size: cover; 
+    background-attachment: fixed;
+}
+
+.form-box-login {
+    width: 380px;
+    height: 580px;
+    position: relative;
+    background: rgb(255, 255, 255,0.842);
+    box-shadow: 0 0 20px 9px #6865641e;
+    border-radius:35px;
+    margin: 6% auto;
+    padding: 10px;
+    overflow: hidden;
+}
+.button-box-login{
+    width: 220px;
+    margin: 35px auto;
+    position: relative;
+    box-shadow: 0 0 20px 9px #220d051a;
+    border-radius: 35px;
+}
+.toggle-btn-login{
+    position: relative;
+    padding: 10px 30px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    font-weight: bolder;
+    cursor: pointer;
+}
+#Btn{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 110px;
+    height: 100%;
+    background: linear-gradient(to right,#430202,#e4d6d6);
+    border-radius: 35px;
+    transition: -5s;
+}
+.button-box button:nth-child(2) {
+    color: rgb(104, 222, 104);
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.button-box button:nth-child(3) {
+    color: red;
+    font-size: 13px;
+    font-weight: 750;
+}
+.input-group{
+    position: absolute;
+    top: 180px;
+    width: 280px;
+    transition: -5s;
+}
+.input-field{
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    margin: 5px 0;
+    background: transparent;
+    border-bottom: 1px solid rgba(153,153,153,0.705);
+    outline: none;
+
+}
+.submit-btn {
+    display: block;
+    width: 85%;
+    padding: 10px;
+    border: none;
+    background: linear-gradient(to right,#430202,#e4d6d6);
+    border-radius: 35px;
+    cursor: pointer;
+    color: #fff;
+    font-size:15px;
+    font-weight: 600;
+    margin:auto;
+    outline: none;
+}
+.input-group a{
+    display:inline-block;
+    text-decoration: none;
+    color: #777;
+    margin: 30px 10px 30px 0px;
+    font-size: 12px;
+}
+#Login{
+    left: 50px;
+}
+#SignIn {
+    left: 450px;
+}

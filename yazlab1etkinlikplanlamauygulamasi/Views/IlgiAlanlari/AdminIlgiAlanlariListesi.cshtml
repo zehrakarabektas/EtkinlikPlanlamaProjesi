@@ -1,0 +1,238 @@
+﻿@using EntityLayer
+@model List<IlgiAlanlari>
+@{
+    ViewBag.Title = "AdminIlgiAlanlariListesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="col-md-12">
+    <div class="panel">
+        <div class="panel-heading">
+            <h4>İlgi Alanları Yönetimi</h4>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-3 ms-2 me-2" style="margin-top: 20px; margin-left: 20px; margin-right: 20px;">
+            
+            <button class="btn btn-sm btn-yesil" data-bs-toggle="modal" data-bs-target="#Modal1">
+                <i class="fas fa-plus-circle"></i> Yeni İlgi Alanı Ekle
+            </button>
+            <div class="modal" id="Modal1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Yeni İlgi Alanı Ekle</h4>
+                        </div>
+                        <form method="post" action="/IlgiAlanlari/IlgiAlaniEkleme" id="ilgiAlaniForm">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="IlgiAlaniAdi">İlgi Alanı Adı:</label>
+                                    <input type="text" name="IlgiAlaniAdi" class="form-control" id="IlgiAlaniAdi" />
+                                    @*@Html.ValidationMessageFor(model => model.IlgiAlaniAdi, "", new { @class = "text-danger" })*@ 
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="kategoriID">İlgi Alanı Kategorisi:</label>
+                                    <select name="kategoriID" class="form-control" id="kategoriID">
+                                        <option value="" disabled selected>Bir Kategori Seçin</option> 
+                                        @foreach (var kategori in ViewBag.Kategoriler as List<SelectListItem>)
+                                        {
+                                            <option value="@kategori.Value">@kategori.Text</option>
+                                        }
+                                    </select>
+                                
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="OnayDurum">Onay Durumu:</label>
+                                    <select name="OnayDurum" class="form-control" id="OnayDurum">
+                                        <option value="1">Onaylı</option>   
+                                        <option value="0">Onaylı Değil</option>  
+                                        <option value="2">Onay Bekliyor</option> 
+                                    </select>
+                                </div>
+                                <button class="btn btn-info btn-bordo">Kaydet</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>İlgi Alanı Adı</th>
+                    <th>Kategori</th>
+                    <th>Onay Durumu</th>
+                    <th>İşlemler</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ilgi in Model)
+                {
+                    <tr>
+                        <input type="hidden" name="IlgiAlaniID" value="@ilgi.IlgiAlaniID" />
+                        <td>@ilgi.IlgiAlaniAdi</td>
+
+                        <td>
+                            @((ViewBag.Kategoriler as List<SelectListItem>)?.FirstOrDefault(k => k.Value == ilgi.KategoriID.ToString())?.Text ?? "Kategori Yok")
+                        </td>
+                        <td>
+                            @if (ilgi.OnaylanmaDurumu == OnayDurumu.Onayli)
+                            {
+                                <p>
+                                    <i class="fas fa-check-circle" style="color: green;"></i>
+                                    <span style="color: green;">Onaylandı</span>
+                                </p>
+                            }
+                            else if (ilgi.OnaylanmaDurumu  == OnayDurumu.OnayBekliyor)
+                            {
+                                <p>
+                                    <i class="fas fa-hourglass-half" style="color: orange;"></i>
+                                    <span style="color: orange;">Onay Bekliyor</span>
+                                </p>
+
+                            }
+                            else
+                            {
+                                <p>
+                                    <i class="fas fa-times-circle" style="color: red;"></i>
+                                    <span style="color: red;">Onay Reddedildi</span>
+                                </p>
+
+                            }
+                        </td>
+
+                        <td>
+                            <a href="@Url.Action("Onayla", "IlgiAlanlari", new { illgiALaniID = ilgi.IlgiAlaniID })" class="btn btn-sm btn-yesil"
+                               @(ilgi.OnaylanmaDurumu != OnayDurumu.OnayBekliyor ? "disabled" : "")
+                               style="@(ilgi.OnaylanmaDurumu != OnayDurumu.OnayBekliyor ? "opacity: 0.5; cursor: not-allowed;" : "")">
+                                <i class="fas fa-check"></i> Onayla
+                            </a>
+                            <a href="@Url.Action("Reddet", "IlgiAlanlari", new { ilgiAlaniID = ilgi.IlgiAlaniID })" class="btn btn-sm btn-kirmizi "
+                               @(ilgi.OnaylanmaDurumu != OnayDurumu.OnayBekliyor ? "disabled" : "")
+                               style="@(ilgi.OnaylanmaDurumu != OnayDurumu.OnayBekliyor ? "opacity: 0.5; cursor: not-allowed;" : "")">
+                                <i class="fas fa-times"></i> Reddet
+                            </a>
+                            <a href="@Url.Action("AdminIlgiAlanGuncelle", "IlgiAlanlari", new { ilgiAlaniID = ilgi.IlgiAlaniID  })" class="btn btn-sm btn-bordo">
+                                <i class="fas fa-edit"></i> Güncelle
+                            </a>
+                           
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+   
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .btn-outline-bordo {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-outline-bordo:hover {
+            background-color: #430202;
+            color: white;
+            border: 2px solid #5b0f14;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white;
+        }
+
+    .btn-kirmizi {
+        background-color: #8b0000; 
+        color: white;
+        border-color: #8b0000;
+    }
+
+        .btn-kirmizi:hover {
+            background-color: #660000;
+            border-color: #660000;
+            color: white;
+        }
+
+    .panel {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .panel-heading {
+        background-color: #430202;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById("ilgiAlaniForm").onsubmit = function (event) {
+        var ilgiAlaniAdi = document.getElementById("IlgiAlaniAdi").value;
+        var kategoriID = document.getElementById("kategoriID").value;
+        var onayDurum = document.getElementById("OnayDurum").value;
+
+        if (ilgiAlaniAdi === "" || kategoriID === "" || onayDurum === "") {
+            alert("Lütfen tüm alanları doldurun.");
+            event.preventDefault();  
+        }
+    };
+</script>

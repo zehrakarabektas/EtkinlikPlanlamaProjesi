@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewBag.Title = "UygulamaGirisSayfasi";
+    Layout = "~/Views/Shared/AnaGirisLayout.cshtml";
+}
+
+<div class="container mt-3">
+
+    <div id="eventSlider" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+        <div class="carousel-inner" style="border-radius: 20px; overflow: hidden;">
+            <div class="carousel-item active">
+                <img src="@Url.Content("~/Images/anasayfa/anasayfaresmi1.png")" class="d-block w-100" alt="Etkinlik 1" style="height: 500px; object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="@Url.Content("~/Images/anasayfa/anasayfaresmi2.png")" class="d-block w-100" alt="Etkinlik 2" style="height: 500px; object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="@Url.Content("~/Images/anasayfa/anasayfaresmi4.png")" class="d-block w-100" alt="Etkinlik 3" style="height: 500px; object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="@Url.Content("~/Images/anasayfa/anasayfaresmi5.png")" class="d-block w-100" alt="Etkinlik 4" style="height: 500px; object-fit: cover;">
+            </div>
+        </div>
+         Slider Kontrolleri 
+        <button class="carousel-control-prev" type="button" data-bs-target="#eventSlider" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Önceki</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#eventSlider" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Sonraki</span>
+        </button>
+    </div>
+
+
+    <div class="text-center mt-5">
+        <h2 class="display-4 mb-4" style="font-weight: bold; color: #800000;">Etkinlik Planlamanızı Başlatın!</h2>
+        <p class="lead mb-5" style="font-size: 1.2rem; color: #333;">
+            Etkinliklerinizi kolayca planlayın ve en iyi deneyimi oluşturun! Katılımcılarla etkileşim kurun, takvim oluşturun, davetiyeleri gönderin ve çok daha fazlası.<br /> Her şey birkaç tık uzağınızda!
+        </p>
+        <p class="mb-5" style="font-size: 1.1rem; color: #666;">
+            Platformumuz sayesinde etkinliklerinizi en verimli şekilde yönetebilirsiniz.
+            <br />
+            Konumunuza yakın ve ilgi alanınıza göre etkinliklere ulaşmak için şimdi kayıt olmanın tam zamanı.
+        </p>
+
+        <a href="/Home/KullaniciGirisi" class="btn btn-dark btn-lg text-white " style="border-radius: 50px; padding: 15px 30px; font-size: 1.2rem;">Kayıt Ol ve Giriş Yap</a>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim1.png")" class="card-img-top" alt="Etkinlikleri Kolayca Yönetebilme" style="height: 300px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body" style="background-color: #800000; color: white; border-end-start-radius: 15px; border-end-end-radius: 15px;">
+                    <h5 class="card-title">Etkinlikleri Kolayca Yönetebilme</h5>
+                    <p class="card-text">Kapsamlı yönetim araçlarımızla etkinliklerinizi kolayca organize edin ve katılımcıların ihtiyaçlarını karşılayın.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim2.png")" class="card-img-top" alt="Farklı İlgi Alanlarına Göre Etkinlikler" style="height: 300px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body" style="background-color: #800000; color: white; border-end-start-radius:15px; border-end-end-radius:15px;">
+                    <h5 class="card-title">Farklı İlgi Alanlarına Göre Sayısız Etkinlik</h5>
+                    <p class="card-text">Her ilgi alanına hitap eden etkinliklerle katılımcıların beklentilerini karşılıyoruz.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim3.png")" class="card-img-top" alt="Etkinliklere Kolay Ulaşım ve Katılımcılarla Sosyalleşme" style="height: 300px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body" style="background-color: #800000; color: white; border-end-start-radius: 15px; border-end-end-radius: 15px;">
+                    <h5 class="card-title">Etkinliklere Kolay Ulaşım ve Sosyalleşme</h5>
+                    <p class="card-text">Etkinliklere hızlıca ulaşın, yeni insanlarla tanışarak ağınızı genişletin.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<div class="container mt-5 text-center">
+    <h3 class="mb-4" style="color: #800000;">Hayalinizdeki Etkinliği Planlayın!</h3>
+    <p style="color: #333;">Hadi başlayalım ve unutulmaz etkinliklerinizi hayata geçirelim. Katılımcıların ilgisini çekecek bir etkinlik düzenlemek için burada her şey mevcut!</p>
+    <a href="/Home/KulaniciGirisi" class="btn btn-dark btn-lg" style="border-radius: 50px;">Etkinlik Oluştur</a>
+</div>
+

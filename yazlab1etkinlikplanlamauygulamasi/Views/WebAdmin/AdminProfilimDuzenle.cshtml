@@ -1,0 +1,251 @@
+﻿@model EntityLayer.Kullanicilar
+@{
+    ViewBag.Title = "AdminProfilimDuzenle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>AdminProfilimDuzenle</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h5>Admin Profilim </h5>
+            </div>
+            <div class="panel-body">
+
+                @using (Html.BeginForm("AdminProfilimDuzenle", "WebAdmin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Admin ID")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.KullaniciID, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Kullanıcı Rolü")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.KullaniciRole, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Admin Adı")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.KullaniciAdi, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.KullaniciAdi)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Yeni Şifreni Oluşturabilirsin")
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="password" class="form-control" name="Sifre" />
+                                        @Html.ValidationMessageFor(kullanici => kullanici.Sifre)
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Ad")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.Ad, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.Ad)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Soyad")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.Soyad, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.Soyad)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("E-posta")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.Eposta, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.Eposta)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Telefon Numarası")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.TelefonNumarasi, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.TelefonNumarasi)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Konum")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.Konum, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.Konum)
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Doğum Tarihi")
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(kullanici => kullanici.DogumTarihi, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                        @Html.ValidationMessageFor(kullanici => kullanici.DogumTarihi)
+                                    </div>
+                                </div>
+                                <br />
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="panel-heading" style="padding: 2px 2px;">
+                                <p>Profil Fotoğrafım </p>
+                            </div>
+                            <div class="image-preview text-center">
+                                <img id="ProfilFotografiPreview" src="@Url.Content(string.IsNullOrEmpty(Model.ProfilFotografi) ? "~/Images/bosprofil.png" : "~/" + Model.ProfilFotografi)"  alt="Profile Photo" class="img-fluid">
+                            </div>
+                            <input type="file" name="ProfilFotografi" accept="image/*" onchange="gorseliGoster(event)" class="form-control mt-2">
+                            <br />
+                            <br />
+                        </div>
+
+
+                    </div>
+
+                    <button type="submit" class="btn btn-bordo">Güncelle</button>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Content/MultiSelect.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new MultiSelect(document.getElementById('interests'), {
+            placeholder: 'İlgi Alanlarınızı Seçin',
+            search: true,
+            selectAll: true
+        });
+    });
+
+    function gorseliGoster(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('ProfilFotografiPreview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-group .col-md-4 {
+        position: relative;
+        top: 10px;
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+        width: 100%;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .panel {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .panel-heading {
+        background-color: #430202;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .image-preview {
+        text-align: center;
+        border: 2px solid #ccc;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-top: 10px;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .image-preview h4 {
+            font-size: 16px;
+            color: #430202;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+
+    .image-preview img {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+        }
+</style>

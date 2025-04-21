@@ -1,0 +1,374 @@
+﻿@using EntityLayer
+@model List<Mesajlar>
+@{
+    ViewBag.Title = "AdminGeriBildirimMesajlari";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    var kullanicilar = ViewBag.TumKullanicilar as List<Kullanicilar>;
+    var girisYapanId = Session["KullaniciID"] as int?;
+    var kullaniciMesajSiralama = kullanicilar
+         .Select(k => new
+         {
+             Kullanici = k,
+             SonMesaj = Model
+                 .Where(m => m.GondericiID == k.KullaniciID || m.AliciID == k.KullaniciID)
+                 .OrderByDescending(m => m.GonderimZamani)
+                 .FirstOrDefault()
+         })
+         .OrderByDescending(x => x.SonMesaj?.GonderimZamani ?? DateTime.MinValue)
+         .ToList();
+    var kullanici = ViewBag.Kullanicilar as Kullanicilar;
+
+}
+
+<div class="container">
+    <div class="chat-sidebar">
+        <h5>Geri Bildirimler</h5>
+        <ul class="chat-list">
+            @foreach (var sohbet in kullaniciMesajSiralama)
+            {
+                <li>
+                    <a href="@Url.Action("AdminGeriBildirimMesajlari", "Mesajlar", new { kullaniciID = sohbet.Kullanici.KullaniciID })" class="sidebar-link">
+                        <img src="@(string.IsNullOrEmpty(sohbet.Kullanici.ProfilFotografi)
+? Url.Content("~/Images/bosprofil.png")
+: Url.Content(sohbet.Kullanici.ProfilFotografi))"
+                             alt="Profil Resmi"
+                             class="sidebar-img"
+                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+
+                        
+                            <span class="chat-name">@sohbet.Kullanici.Ad @sohbet.Kullanici.Soyad</span>
+                            <br />
+                            <span class="last-message-time">
+                                @if (sohbet.SonMesaj != null)
+                                {
+                                    @sohbet.SonMesaj.GonderimZamani.ToString("dd MMM yyyy HH:mm")
+                                }
+                            </span>
+                        
+                    </a>   
+
+
+                </li>
+            }
+        </ul>
+    </div>
+    @if (!Model.Any()&& kullanici==null)
+    {
+        <div class="chat-panel" id="chatPanel" style="display: none;">
+
+        </div>
+    }
+    else
+    {
+        <div class="chat-panel" id="chatPanel">
+            <div class="panel-header">
+                <div class="etkinlik-header">
+                    <img src="@(string.IsNullOrEmpty(kullanici?.ProfilFotografi) ? Url.Content("~/Images/bosprofil.png") : Url.Content(kullanici.ProfilFotografi))"
+                         alt="Etkinlik Görseli" class="etkinlik-img" />
+                    <h5 class="etkinlik-name">@kullanici.Ad  @kullanici.Soyad</h5>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="message-container">
+                    @foreach (var mesaj in Model)
+                    {
+                        var gonderici = kullanicilar?.FirstOrDefault(k => k.KullaniciID == mesaj.GondericiID);
+                        <div class="message-row @(girisYapanId == mesaj.GondericiID ? "self-message" : "other-message")">
+                            @if (girisYapanId != mesaj.GondericiID)
+                            {
+                                <div class="user-profile">
+                                    <img src="@(string.IsNullOrEmpty(gonderici?.ProfilFotografi) ? Url.Content("~/Images/bosprofil.png") : Url.Content(gonderici.ProfilFotografi))"
+                                         alt="Profil" class="profile-img" />
+                                </div>
+                            }
+
+                            <div class="message-bubble">
+                                @if (girisYapanId != mesaj.GondericiID)
+                                {
+                                    <p class="message-sender">@gonderici.Ad @gonderici.Soyad</p>
+                                    <a href="@Url.Action("AdminBildirimMesajSil", "Mesajlar", new { mesajId = mesaj.MesajID})"
+                                       class="delete-link"
+                                       onclick="return confirm('Bu mesajı silmek istediğinize emin misiniz?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                }
+
+                                else
+                                {
+                                    <p class="message-sender">Sen</p>
+                                    <a href="@Url.Action("AdminBildirimMesajSil", "Mesajlar", new { mesajId = mesaj.MesajID})"
+                                       class="delete-link"
+                                       onclick="return confirm('Bu mesajı silmek istediğinize emin misiniz?');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                                <p class="message-text">@mesaj.MesajMetni</p>
+                                <span class="message-time">@mesaj.GonderimZamani.ToString("HH:mm dd/MM/yyyy")</span>
+                            </div>
+                            @if (girisYapanId == mesaj.GondericiID)
+                            {
+                                <div class="user-profile">
+                                    <img src="@(string.IsNullOrEmpty(gonderici?.ProfilFotografi) ? Url.Content("~/Images/bosprofil.png") : Url.Content(gonderici.ProfilFotografi))"
+                                         alt="Profil" class="profile-img" />
+                                </div>
+
+                            }
+                        </div>
+                    }
+                </div>
+
+                @using (Html.BeginForm("AdminBildirimMesajGonder", "Mesajlar", FormMethod.Post))
+                {
+                    <div class="message-input">
+                        @if (kullanici == null)
+                        {
+                            <p>Etkinlik bilgisi yüklenemedi!</p>
+                        }
+                        else
+                        {
+                            @Html.Hidden("kullaniciID", kullanici.KullaniciID)
+                        }
+
+                        <textarea id="MesajMetni" name="MesajMetni" class="form-control" rows="1" placeholder="Bir mesaj yaz..."></textarea>
+                        <button type="submit" class="btn send-button">Gönder</button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .chat-sidebar {
+        width: 300px;
+        height: 90%;
+        overflow-y: auto;
+        background-color: #f1f1f1;
+        padding: 20px;
+        border-right: 0px solid #ccc;
+    }
+
+        .chat-sidebar h5 {
+            width: 280px;
+            background-color: #430202;
+            padding: 10px;
+            margin: 0;
+            color: white;
+        }
+
+    .message-bubble {
+        display: flex;
+        position: relative;
+        padding: 10px;
+        background-color: #f1f1f1;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 70%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        flex-wrap: nowrap;
+        white-space: normal;
+    }
+
+        .message-bubble .delete-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 14px;
+            color: black;
+            text-decoration: none;
+        }
+
+            .message-bubble .delete-link:hover {
+                color: white;
+                cursor: pointer;
+            }
+
+    .chat-list {
+        list-style: none;
+        padding: 0;
+    }
+
+        .chat-list li {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+            .chat-list li:hover {
+                background-color: #ddd;
+            }
+
+    .sidebar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .sidebar-link {
+        color: black;
+        text-decoration: none;
+    }
+
+        .sidebar-link:hover {
+            color: #333;
+        }
+
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        background-color: #430202;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .etkinlik-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .etkinlik-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .etkinlik-name {
+        margin-left: 10px;
+    }
+
+    .close-btn {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .message-row {
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .user-profile {
+        margin-left: 10px;
+    }
+
+    .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .self-message {
+        justify-content: flex-end;
+    }
+
+    .other-message {
+        justify-content: flex-start;
+    }
+
+    .self-message .message-bubble {
+        background-color: #a24b4b;
+        color: white;
+        border: 2px solid #a24b4b;
+    }
+
+    .other-message .message-bubble {
+        background-color: #6c757d;
+        color: white;
+        border: 2px solid #6c757d;
+    }
+
+    .chat-panel {
+        flex-grow: 1;
+        width: 600px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+        max-width: calc(100% - 220px);
+        height: 90vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .panel-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
+        padding-bottom: 50px;
+        width: 100%;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+    .message-input {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .message-input textarea {
+            flex: 1;
+            resize: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+    .send-button {
+        background-color: #430202;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+        .send-button:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .past-event {
+        background-color: #d3d3d3;
+        color: #636363;
+    }
+
+        .past-event a {
+            color: #636363;
+        }
+
+            .past-event a:hover {
+                color: #4e4e4e;
+            }
+</style>

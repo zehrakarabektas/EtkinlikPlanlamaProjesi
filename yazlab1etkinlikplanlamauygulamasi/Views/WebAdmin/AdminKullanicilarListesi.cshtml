@@ -1,0 +1,173 @@
+﻿@model IEnumerable<EntityLayer.Kullanicilar>
+@{
+    ViewBag.Title = "AdminKullanicilarListesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@{
+    var successMessage = TempData["SuccessMessage"];
+    var errorMessage = TempData["ErrorMessage"];
+}
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success">
+        @successMessage
+    </div>
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+<!DOCTYPE html>
+<html>
+<body class="hold-transition sidebar-mini">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Kullanıcılar </h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="card card-solid">
+            <div class="card-body pb-0">
+                <div class="row d-flex align-items-stretch">
+                    @foreach (var kullanici in Model)
+                    {
+                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                            <div class="card bg-light">
+                                <div class="card-header text-muted border-bottom-0">
+                                    Kullanıcı
+                                </div>
+                                <div class="card-body pt-0">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <h2 class="lead"><b>@kullanici.Ad @kullanici.Soyad</b></h2>
+
+                                            <ul class="ml-4 mb-0 fa-ul text-muted">
+                                                <li class="small">
+                                                    <span class="fa-li"><i class="fas fa-calendar-alt"></i> </span>
+                                                    Yaş:
+                                                    <span class="font-weight-bold">
+                                                        @{
+                                                            var today = DateTime.Today;
+                                                            var age = today.Year - kullanici.DogumTarihi.Year;
+                                                            if (kullanici.DogumTarihi.Date > today.AddYears(-age))
+                                                            {
+                                                                age--;
+                                                            }
+                                                            @age
+                                                        }
+                                                    </span>
+                                                </li>
+                                                <li class="small">
+                                                    <span class="fa-li"><i class="fas fa-envelope"></i></span>
+                                                    Mail: <span class="font-weight-bold">@kullanici.Eposta</span>
+                                                </li>
+                                                <li class="small">
+                                                    <span class="fa-li"><i class="fas fa-map-marker-alt"></i></span>
+                                                    Konum: <span class="font-weight-bold">@kullanici.Konum</span>
+                                                </li>
+                                                <li class="small">
+                                                    <span class="fa-li"><i class="fas fa-phone-alt"></i></span>
+                                                    Telefon: <span class="font-weight-bold">@kullanici.TelefonNumarasi</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-5 text-center">
+                                            <img src="@(string.IsNullOrEmpty(kullanici.ProfilFotografi) ? Url.Content("~/images/bosprofil.png") : kullanici.ProfilFotografi)"
+                                                 alt="Kullanıcı Profili"
+                                                 class="img-circle img-fluid"
+                                                 style="width: 128px; height: 128px; border: 2px solid #ccc;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="text-right">
+                                        <a href="@Url.Action("AdminGeriBildirimMesajlari","Mesajlar", new { kullaniciID = kullanici.KullaniciID })" class="btn btn-sm btn-yesil" title="Mesaj Gönder">
+                                            <i class="fas fa-comments"></i>
+                                        </a>
+                                        <a href="@Url.Action("KullaniciGoruntule","WebAdmin", new { kullaniciID = kullanici.KullaniciID })" class="btn btn-sm btn-bordo" title="Görüntüle">
+                                            <i class="fas fa-eye"></i> Görüntüle
+                                        </a>
+                                        <a href="@Url.Action("KullaniciSil","WebAdmin", new { kullaniciID = kullanici.KullaniciID }) " class="btn btn-sm btn-black" title="Sil">
+                                            <i class="fas fa-trash-alt"></i> Sil
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+
+
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .btn-outline-bordo {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-outline-bordo:hover {
+            background-color: #430202;
+            color: white;
+            border: 2px solid #5b0f14;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white;
+        }
+</style>

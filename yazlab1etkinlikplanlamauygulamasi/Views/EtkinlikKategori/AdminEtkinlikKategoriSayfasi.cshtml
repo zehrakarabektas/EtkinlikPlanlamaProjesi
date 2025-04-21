@@ -1,0 +1,150 @@
+﻿@using EntityLayer
+@model List<EtkinlikKategori>
+@{
+    ViewBag.Title = "Admin Etkinlik Kategori Sayfası";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kategoriler</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="card card-solid">
+        <div class="card-body pb-0">
+            <div class="row d-flex align-items-stretch">
+                @foreach (var kategori in Model)
+                {
+                    <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                        <div class="card bg-light">
+                            <div class="card-header text-muted border-bottom-0">
+                                @*Kategori ID: @kategori.KategoriID*@
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <br />
+                                       
+                                        <h2 class="lead"><b>@kategori.KategoriAdi</b></h2>
+                                        <br />
+                                        <p class="text-muted text-sm">
+                                            <b>Onay Durumu: </b>
+                                            @(kategori.KategoriOnayDurumu ? "Onaylı" : "Onay Bekliyor")
+                                        </p>
+                                       
+                                        <p class="text-muted text-sm">
+                                            <b>İlgi alanları: </b>
+                                            <br />
+                                            @{
+                                                bool ilgiliIlgiAlaniVar = false;
+                                                var ilgiAlanlariListesi = new List<string>();
+                                            }
+
+                                            @foreach (var ilgiAlani in ViewBag.IlgiAlanlari)
+                                            {
+                                                if (ilgiAlani.KategoriID == kategori.KategoriID)
+                                                {
+                                                    ilgiliIlgiAlaniVar = true;
+
+                                                    if (ilgiAlani.IlgiAlaniAdi != null)
+                                                    {
+                                                        ilgiAlanlariListesi.Add(ilgiAlani.IlgiAlaniAdi);
+                                                    }
+                                                }
+                                            }
+
+                                            @if (ilgiliIlgiAlaniVar)
+                                            {
+                                                @Html.Raw(string.Join(", ", ilgiAlanlariListesi)) 
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("İlgili ilgi alanı yok")
+                                            }
+
+                                            <br />
+                                        </p>
+                                    </div>
+                                    <div class="col-6 d-flex justify-content-center align-items-center">
+                                        @if (!string.IsNullOrEmpty(kategori.KategoriResmi))
+                                        {
+                                            <img src="@kategori.KategoriResmi" alt="@kategori.KategoriAdi" class="img-circle img-fluid" style="width: 200px; height: auto;" />
+                                        }
+                                        else
+                                        {
+                                            <span>No Image</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="text-right">
+                                    <a href="@Url.Action("EtkinliklerSayfasi", "Etkinlikler", new { kategoriId = kategori.KategoriID  })" class="btn btn-sm btn-yesil">
+                                        <i class="fas fa-list"></i> Etkinlikler
+                                    </a>
+       
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white; 
+        }
+   
+
+       
+</style>

@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "AdminAnaSayfasi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+}
+<br />
+@if (TempData["Message"] != null)
+{
+    <div class="alert @(TempData["MessageType"] == "success" ? "alert-success" : "alert-danger")" role="alert">
+        @TempData["Message"]
+    </div>
+}
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<div id="info-panel" style="position: absolute; top: 50px; right: 20px; background-color: white; padding: 5px 10px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); z-index: 5; font-size: 12px; max-width: 180px;">
+    <h4 style="font-size: 14px; margin: 0; padding-bottom: 5px;">Marker Anlamları</h4>
+    <ul id="marker-info-list" style="list-style: none; padding: 0; margin: 0;">
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png" width="15" height="15"> Aktif Etkinlikler</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png" width="15" height="15"> Reddedilen Etkinlikler</li>
+        <li><img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png" width="15" height="15"> Onay Bekleyen Etkinlikler</li>
+    </ul>
+</div>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0S5pBRUFR04U15319_piNxqF14j691nE&callback=initMap"
+        type="text/javascript"></script>
+
+@{
+    var kullaniciAdresi = Session["KullaniciAdresi"]?.ToString() ?? "Varsayılan Adres";
+}
+
+<script>
+    var map;
+    var geocoder;
+
+    function initMap() {
+        var defaultLocation = { lat: 38.9637, lng: 35.2433 };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 5,
+            center: defaultLocation,
+            zoomControl: true,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            scaleControl: false,
+            rotateControl: false
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        @if (ViewBag.TumEtkinlikler != null && ViewBag.TumEtkinlikler.Count > 0)
+        {
+            foreach (var etkinlik in ViewBag.TumEtkinlikler)
+            {
+                var etkinlikAdi = Json.Encode(etkinlik.EtkinlikAdi);
+                var etkinlikKonumu = Json.Encode(etkinlik.EtkinlikKonumu);
+                var etkinlikResmi = Json.Encode(etkinlik.EtkinlikResmi);
+                var etkinlikID = Json.Encode(etkinlik.EtkinlikID);
+                var onayDurumu = etkinlik.EtkinlikOnayDurumu;
+
+                <text>
+                geocoder.geocode({ 'address': '@Html.Raw(Json.Encode(etkinlikKonumu))' }, function (results, status) {
+                    if (status === 'OK') {
+                        var location = results[0].geometry.location;
+
+                        var markerColor = 'green';
+                         var onayDurumuValue = '@Html.Raw(Json.Encode(onayDurumu))';
+                        if (onayDurumuValue === '0') {
+                            markerColor = 'red';
+                        } else if (onayDurumuValue === '2') {
+                            markerColor = 'yellow';
+                        }
+
+                        var marker = new google.maps.Marker({
+                            id: '@Html.Raw(etkinlikID)',
+                            position: location,
+                            map: map,
+                            title: '@Html.Raw(Json.Encode(etkinlikAdi))',
+                            icon: {
+                                url: 'http://maps.google.com/mapfiles/ms/icons/' + markerColor + '-dot.png'
+                            }
+                        });
+
+                        var infowindow = new google.maps.InfoWindow({
+                            content: `
+                                <div class=".gm-style-iw button.gm-ui-hover-effect" style="font-size: 12px; padding: 5px; max-width: 200px;">
+                                     <h4>${'@Html.Raw(Json.Encode(etkinlikAdi))'.replace(/"/g, '')}</h4>
+                                     <p>${'@Html.Raw(Json.Encode(etkinlikKonumu))'.replace(/"/g, '')}</p>
+                                </div>
+                            `
+                        });
+                        marker.addListener('mouseover', function () {
+                            infowindow.open(map, marker);
+                        });
+
+                        marker.addListener('mouseout', function () {
+                            infowindow.close();
+                        });
+                        marker.addListener('click', function () {
+                            infowindow.open(map, marker);
+                            window.location.href = '@Url.Action("EtkinlikDetay", "Kullanicilar", new { etkinlikID = etkinlikID })';
+                        });
+
+                    } else {
+                        console.error("Konum bulunamadı: " + '@Html.Raw(Json.Encode(etkinlikKonumu))');
+                    }
+                });
+                </text>
+            }
+        }
+    }
+
+    google.maps.event.addDomListener(window, 'load', initMap);
+</script>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim3.png")" class="card-img-top" alt="Kullanıcı Sayısı" style="height: 150px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body  text-white" style="background-color: #430202;">
+                    <h5 class="card-title">Toplam Kullanıcı Sayısı</h5>
+                    <h2>@ViewBag.KullaniciSayisi</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim1.png")" class="card-img-top" alt="Etkinlik Sayısı" style="height: 150px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body  text-white" style="background-color: #430202;">
+                    <h5 class="card-title">Toplam Etkinlik Sayısı</h5>
+                    <h2>@ViewBag.EtkinlikSayisi</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg" style="border-radius: 15px; height: 100%;">
+                <img src="@Url.Content("~/Images/anasayfa/resim2.png")" class="card-img-top" alt="İlgi Alanları" style="height: 150px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <div class="card-body  text-white" style="background-color: #430202;">
+                    <h5 class="card-title">Toplam İlgi Alan Sayısı</h5>
+                    <h2>@ViewBag.IlgiAlanSayisi</h2>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<style>
+    .gm-style-iw button.gm-ui-hover-effect {
+        display: none !important;
+    }
+</style>

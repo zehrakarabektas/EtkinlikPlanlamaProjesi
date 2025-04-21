@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewBag.Title = "AdminGirisi";
+    Layout = null;
+}
+@{
+    var mesaj = TempData["Mesaj"] as string;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Admin Girişi</title>
+    <link href="~/Content/styless.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="animation2">
+            <lottie-player src="https://lottie.host/39104874-92f7-4889-9771-e38a793d3ca8/S6qYXp5bq6.json"
+                           background="transparent" speed="1" direction="1" playMode="bounce" loop autoplay>
+
+            </lottie-player>
+        </div>
+        <div class="mainlogin">
+            <div class="form-box-login">
+                <div class="button-box-login">
+                    <div id="Btn"></div>
+                    <button type="button" class="toggle-btn-login" onclick="login()">Log In</button>
+                </div>
+                @using (Html.BeginForm("AdminGirisi", "Home", FormMethod.Post))
+                {
+                    
+                    <div id="Login" class="input-group">
+                        @if (!string.IsNullOrEmpty(mesaj))
+                        {
+                            <div class="alert-red-text">
+                                @mesaj
+                            </div>
+                        }
+                        <input type="text" class="input-field" placeholder="Kullanıcı Adı giriniz." name="KullaniciAdi" required />
+                        <input type="password" class="input-field" placeholder="Şifrenizi giriniz." name="Sifre" required />
+                        <a href="#" onclick="sifreyenile()">Şifremi Unuttum</a>
+                        <button type="submit" class="submit-btn">Login</button>
+
+                    </div>
+                }
+
+                @using (Html.BeginForm("SifreYenileme", "Home", FormMethod.Post))
+                {
+                    <div id="SifreYenile" class="input-group" style="display: none; top: 180px;">
+                        <input type="text" class="input-field" placeholder="Kullanıcı Adı giriniz." name="KullaniciAdi" required />
+                        <input type="email" class="input-field" placeholder="Email giriniz." name="Eposta" required />
+                        <br />
+                        <br />
+                        <button type="submit" class="submit-btn">Şifre Gönder</button>
+                    </div>
+                }
+                @if (ViewBag.Message != null)
+                {
+                    <div class="message-box">
+                        <p>@ViewBag.Message</p>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+    <script src="https://unpkg.com/&#64;lottiefiles/lottie-player@1.7.0/dist/lottie-player.js"></script>
+    <script>
+        var loginx = document.getElementById("Login");
+        var sifreyenilex = document.getElementById("SifreYenile");
+        var btnx = document.getElementById("Btn");
+
+        function login() {
+            document.querySelectorAll("#SifreYenile input").forEach(input => input.value = "");
+            loginx.style.left = "50px";
+            sifreyenilex.style.left = "450px";
+            btnx.style.left = "0px";
+            sifreyenilex.style.display = "none";
+            loginx.style.display = "block";
+
+        }
+        function sifreyenile() {
+            document.querySelectorAll("#Login input").forEach(input => input.value = "");
+            loginx.style.left = "-400px";
+            sifreyenilex.style.left = "50px";
+            btnx.style.left = "110px";
+            loginx.style.display = "none";
+            sifreyenilex.style.display = "block";
+
+        }
+    </script>
+</body>
+</html>
+
+<style>
+    .alert-red-text {
+        color: #430202;
+    }
+</style>

@@ -1,0 +1,374 @@
+﻿@model EntityLayer.Etkinlikler
+@{
+    ViewBag.Title = "KullaniciEtkinlikOlusturmaSayfasi";
+    Layout = "~/Views/Shared/KullaniciLayout.cshtml";
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+
+}
+<link href="~/Content/MultiSelect.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h4>Yeni Etkinlik Ekle</h4>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("KullaniciEtkinlikOlusturmaSayfasi", "Kullanicilar", FormMethod.Post,new {enctype = "multipart/form-data"}))
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="EtkinlikAdi">Etkinlik Adı</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(m => m.EtkinlikAdi, new { @class = "form-control", placeholder = "Etkinlik Adı" })
+                                        @Html.ValidationMessageFor(m => m.EtkinlikAdi, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="Aciklama">Açıklama</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextAreaFor(m => m.Aciklama, new { @class = "form-control", placeholder = "Açıklama", rows = 3 })
+                                        @Html.ValidationMessageFor(m => m.Aciklama, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="EtkinlikTarih">Etkinlik Tarih</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(m => m.EtkinlikTarih, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", min = DateTime.Now.ToString("yyyy-MM-dd") })
+                                        @Html.ValidationMessageFor(m => m.EtkinlikTarih, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="EtkinlikSaati">Etkinlik Saati</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(m => m.EtkinlikSaati, new { @class = "form-control", type = "time" })
+                                        @Html.ValidationMessageFor(m => m.EtkinlikSaati, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="EtkinlikSuresi">Etkinlik Süresi</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(m => m.EtkinlikSuresi, new { @class = "form-control", placeholder = "Etkinlik Süresi (dakika)" })
+                                        @Html.ValidationMessageFor(m => m.EtkinlikSuresi, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-4 d-flex align-items-center">
+                                        <label for="formFileSm" class="form-label mb-0">Etkinlik Resmi</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="formFile" type="file" name="etkinlikResmi" accept="image/*" onchange="gorseliGoster(event)">
+                                    </div>
+                                   
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="EtkinlikAdi">Etkinlik Konumu</label>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.EtkinlikKonumu, new { @class = "form-control", placeholder = "Etkinlik Konumu" })
+
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-bordo" onclick="konumIsaretleme()">
+                                                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(m => m.EtkinlikKonumu, "", new { @class = "text-danger" })
+
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        @Html.HiddenFor(model => model.IlgiAlaniID)
+
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.IlgiAlaniID, "İlgi Alanı")
+                                            @Html.DropDownList("SelectedIlgiAlaniID", (List<SelectListItem>)ViewBag.IlgiAlanlari, "Seçiniz", new { @class = "form-control" })
+
+                                        </div>
+
+                                        <div class="form-group mt-3">
+                                            <label for="YeniIlgiAlani">Yeni İlgi Alanı:</label>
+                                            <input type="text" id="YeniIlgiAlani" name="YeniIlgiAlani" class="form-control" placeholder="Yeni bir ilgi alanı giriniz" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <br />
+                                <button type="submit" class="btn btn-bordo">Ekle</button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="image-preview">
+                                <h4>Yüklenen Resim</h4>
+                                <img id="ResmiGoruntule" src="#" alt="Yüklenen görsel" class="img-fluid" style="display: none;" />
+                            </div>
+
+                            <div class="image-preview text-center mt-4">
+                                <h4>Etkinlik Konumu Haritası</h4>
+                                <div id="map" style="width: 100%; height: 400px; border: 1px solid #ccc;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-group .col-md-2 {
+        position: relative;
+        top: 10px;
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+        width: 100%;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Panel Stili */
+    .panel {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .panel-heading {
+        background-color: #430202;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .image-preview {
+        text-align: center;
+        border: 2px solid #ccc;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-top: 10px;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .image-preview h4 {
+            font-size: 16px;
+            color: #430202;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+
+    .image-preview img {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+        }
+
+    .input-group {
+        display: flex;
+        width: 100%;
+        position: relative;
+    }
+
+        .input-group .form-control {
+            flex-grow: 1;
+            padding-right: 40px;
+        }
+
+    .text-danger {
+        color: red;
+    }
+
+    .input-group-append button {
+        position: absolute;
+        right: 0;
+        height: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-top: 3px;
+    }
+    .gm-ui-hover-effect {
+        transform: scale(0.8);
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .google-maps-info-window {
+        font-size: 15px;
+        max-width: 200px;
+    }
+
+        .google-maps-info-window p {
+            margin: 0;
+            font-size: 15px;
+        }
+</style>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0S5pBRUFR04U15319_piNxqF14j691nE&callback=initMap"
+        type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/Content/MultiSelect.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new MultiSelect(document.getElementById('interests'), {
+            placeholder: 'İlgi Alanlarınızı Seçin',
+            max: 1,
+            search: true,
+            selectAll: true
+        });
+    });
+    var map;
+    var geocoder;
+    var marker;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var etkinlikKonumu = document.getElementById("EtkinlikKonumu").value;
+
+        if (etkinlikKonumu) {
+            konumIsaretleme();
+        } else {
+            initMap();
+        }
+    });
+    function konumIsaretleme() {
+        var etkinlikKonumu = document.getElementById("EtkinlikKonumu").value;
+
+        if (etkinlikKonumu) {
+            geocoder.geocode({ 'address': etkinlikKonumu }, function (results, status) {
+                if (status === 'OK') {
+                    var location = results[0].geometry.location;
+
+                    if (marker) {
+                        marker.setMap(null);
+                    }
+
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: map,
+                        title: etkinlikKonumu
+                    });
+
+                    const infowindow = new google.maps.InfoWindow({
+                        content: `<div class="google-maps-info-window">
+                      <p>Konum:</b> ${etkinlikKonumu}</p>
+                      </div>`
+                    });
+
+                    infowindow.open(map, marker);
+
+                    map.setCenter(location);
+                    map.setZoom(13);
+
+                    document.getElementById("Enlem").value = location.lat();
+                    document.getElementById("Boylam").value = location.lng();
+
+                    console.log("ENLEM:", location.lat(), "BOYLAM:", location.lng());
+                } else {
+                    alert("Konum bulunamadı: " + status);
+                }
+            });
+        } else {
+            alert("Lütfen bir etkinlik adresi giriniz.");
+        }
+    }
+
+    function initMap() {
+        var defaultLocation = { lat: 41.015137, lng: 28.979530 };
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: defaultLocation,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: false,
+            rotateControl: false
+        });
+
+        geocoder = new google.maps.Geocoder();
+    }
+
+
+    function gorseliGoster(event) {
+        var file = event.target.files[0];
+        var output = document.getElementById('ResmiGoruntule');
+        if (file) {
+            var validExtensions = ['image/jpeg', 'image/png', 'image/gif', 'image / jpg'];
+            if (!validExtensions.includes(file.type)) {
+                alert("Lütfen yalnızca JPEG, PNG veya GIF formatında bir dosya seçiniz.");
+                event.target.value = "";
+                output.style.display = 'none';
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                output.src = e.target.result;
+                output.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>

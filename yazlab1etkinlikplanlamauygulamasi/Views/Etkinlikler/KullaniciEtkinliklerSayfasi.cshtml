@@ -1,0 +1,147 @@
+﻿
+@using EntityLayer
+@model List<Etkinlikler>
+@{
+    ViewBag.Title = "KullaniciEtkinliklerSayfasi";
+    Layout = "~/Views/Shared/KullaniciLayout.cshtml";
+}
+
+<br />
+@if (!Model.Any())
+{
+    <div class="alert alert-default-dark" role="alert">
+        Düzenlenen etkinlik yok.
+    </div>
+}
+<div class="row">
+    @foreach (var etkinlik in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-img-top" style="background-image: url('@Url.Content("~/" + etkinlik.EtkinlikResmi)');"></div>
+
+                <div class="card-header text-center">
+                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                        @etkinlik.EtkinlikAdi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <i class="fas fa-user" style="margin-right: 10px;"></i>
+                        Etkinliği düzenleyen :
+                        @foreach (var kullanici in ViewBag.Kullanicilar)
+                        {
+                            if (kullanici.KullaniciID == etkinlik.KullaniciID)
+                            {
+                                @kullanici.Ad @kullanici.Soyad
+
+
+                            }
+                        }
+                    </p>
+
+                    <p><i class="fas fa-location-arrow" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikKonumu</p>
+                    <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikTarih.ToString("dd MMMM yyyy")</p>
+                    <p><i class="fas fa-clock" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikSaati.ToString(@"hh\:mm")</p>
+
+
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-end align-items-center">
+
+                            <a href="@Url.Action("EtkinlikGoruntule", "Etkinlikler",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo ">
+                                <i class="fas fa-eye"></i> Görüntüle
+                            </a>
+                            <a href="@Url.Action("KullaniciKatildigiEtkinlikKatilimcilar","Katilimcilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black">
+                                <i class="fas fa-users"></i> Katılımcılar
+                            </a>
+
+                            <a href="@Url.Action("EtkinlikKatil", "Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-yesil" onclick="return confirm('Bu etkinliğe katılmak istediğinizden emin misiniz?');">
+                                <i class="fas fa-calendar-check "></i> Katıl
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .card-img-top {
+        background-size: cover;
+        background-position: center;
+        height: 250px; 
+        border-radius: 5px;
+    }
+
+    .card-footer {
+        padding: 15px;
+    }
+
+    .d-flex {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center; 
+        gap: 5px; 
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .btn-outline-bordo {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-outline-bordo:hover {
+            background-color: #430202;
+            color: white;
+            border: 2px solid #5b0f14;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white;
+        }
+</style>

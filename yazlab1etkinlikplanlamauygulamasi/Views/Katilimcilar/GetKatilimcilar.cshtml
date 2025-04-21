@@ -1,0 +1,244 @@
+﻿@using EntityLayer
+@model List<Kullanicilar>
+@{
+    ViewBag.Title = "GetKatilimcilar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var etkinlikID = ViewBag.EtkinlikID;
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h4>Katılımcılar Listesi</h4>
+            </div>
+            <div class="container mt-4">
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row">
+                        @foreach (var kullanici in Model)
+                        {
+                            <div class="col-sm-6 col-md-4 col-lg-4 mb-3">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="image-container" style="position: relative; overflow: hidden;">
+                                        <img src="@Url.Content(kullanici.ProfilFotografi ?? "~/Images/default-avatar.png")"
+                                             class="card-img-top img-fluid rounded-circle mx-auto mt-3"
+                                             alt="User Avatar"
+                                             style="width: 150px; height: 150px; object-fit: cover;">
+                                    </div>
+                                    <br />
+                                    <div class="card-body text-center">
+                                        <div style="text-align: center;">
+                                            <h6 class="font-weight-bold">@kullanici.Ad @kullanici.Soyad</h6>
+
+                                        </div>
+                                        <p class="card-text mb-1 d-flex justify-content-between">
+                                            <label class="text-muted">Kullanıcı Adı:</label>
+                                            <span>@kullanici.KullaniciAdi</span>
+                                        </p>
+                                        <p class="card-text mb-1 d-flex justify-content-between">
+                                            <label class="text-muted">E-posta:</label>
+                                            <span>@kullanici.Eposta</span>
+                                        </p>
+                                        <p class="card-text d-flex justify-content-between">
+                                            <label class="text-muted">Telefon:</label>
+                                            <span>@kullanici.TelefonNumarasi</span>
+                                        </p>
+                                        <p class="card-text d-flex justify-content-between">
+                                            <label class="text-muted">Konum:</label>
+                                            <span>@kullanici.Konum</span>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-flex justify-content-end align-items-center gap-3">
+                                            <a href="#" class="btn btn-sm btn-yesil">
+                                                <i class="fas fa-comments" style="color: white;"></i>
+                                            </a>
+                                            <a href="@Url.Action("KullaniciGoruntule","WebAdmin", new { kullaniciID = kullanici.KullaniciID })" class="btn btn-sm btn-bordo">
+                                                 <i class="fas fa-eye"></i> Görüntüle
+                                            </a>
+                                            <a href="@Url.Action("AdminKatilimciSil","Katilimcilar",new {etkinlikID= etkinlikID ,katilimciID= kullanici.KullaniciID })" class="btn btn-sm btn-black">
+                                                <i class="fas fa-trash-alt"></i> Sil
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>      
+
+                                       
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>Bu etkinlik için katılımcı bulunmamaktadır.</p> 
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+        width: 100%;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .panel {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .panel-heading {
+        background-color: #430202;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        max-width: 800px; 
+        margin: auto;
+        width: 100%;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-img-top {
+        object-fit: cover;
+        width: 150px;
+        height: 150px;
+        border: 3px solid #28a745;
+        border-radius: 5%;
+        padding: 5px;
+    }
+
+    .card-body {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+        .card-body .d-flex {
+            margin-bottom: 10px;
+            justify-content: flex-start; 
+        }
+
+            .card-body .d-flex label,
+            .card-body .d-flex span {
+                display: inline-block; 
+                margin-right: 0px; 
+            }
+
+            .card-body .d-flex label {
+                text-align: left;
+                font-weight: normal;
+                flex: 0 0 120px; 
+            }
+
+            .card-body .d-flex span {
+                text-align: left; 
+                flex: 1; 
+            }
+
+    .card-footer {
+        display: flex;
+        justify-content: flex-end; 
+        align-items: center; 
+        padding: 5px 10px;
+        background-color: #f8f9fa;
+    }
+
+        .card-footer .btn {
+            font-size: 0.8rem;
+            padding: 5px 8px;
+            margin: 0 3px;
+            white-space: nowrap;
+        }
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: -10px;
+    }
+
+    .input-group {
+        display: flex;
+        width: 100%;
+        position: relative;
+    }
+
+        .input-group .form-control {
+            flex-grow: 1;
+            padding-right: 40px;
+        }
+
+    .input-group-append button {
+        position: absolute;
+        right: 0;
+        height: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-top: 3px;
+    }
+
+    
+    
+    
+    
+
+</style>

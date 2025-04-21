@@ -1,0 +1,165 @@
+﻿@using EntityLayer
+@model List<Etkinlikler>
+@{
+    ViewBag.Title = "DüzenlenenEtkinliklerListesi";
+    Layout = "~/Views/Shared/KullaniciLayout.cshtml";
+}
+<br />
+@if (!Model.Any())
+{
+    <div class="alert alert-default-dark" role="alert">
+        Düzenlenen etkinlik yok.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var etkinlik in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-img-top" style="background-image: url('@Url.Content("~/" + etkinlik.EtkinlikResmi)');"></div>
+                    <div class="card-header text-center">
+                        <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                            @etkinlik.EtkinlikAdi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @*<p><i class="fas fa-user" style="margin-right: 10px;"></i>Etkinliği düzenleyen:  @etkinlik.KullaniciID</p>*@
+                        <p><i class="fas fa-location-arrow" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikKonumu</p>
+                        <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikTarih.ToString("dd MMMM yyyy")</p>
+                        <p><i class="fas fa-clock" style="margin-right: 10px;"></i>   @etkinlik.EtkinlikSaati.ToString(@"hh\:mm")</p>
+                       
+                        @if (etkinlik.EtkinlikOnayDurumu == OnayDurumu.Onayli)
+                        {
+                            <p>
+                                <strong>Onay Durumu: </strong>
+                                <i class="fas fa-check-circle" style="color: green;"></i>
+                                <span style="color: green;">Onaylandı</span>
+                            </p>
+                        }
+                        else if (etkinlik.EtkinlikOnayDurumu == OnayDurumu.OnayBekliyor)
+                        {
+                            <p>
+                                <strong>Onay Durumu: </strong>
+                                <i class="fas fa-hourglass-half" style="color: orange;"></i>
+                                <span style="color: orange;">Onay Bekliyor</span>
+                            </p>
+
+                        }
+                        else
+                        {
+                            <p>
+                                <strong>Onay Durumu: </strong>
+                                <i class="fas fa-times-circle" style="color: red;"></i>
+                                <span style="color: red;">Onay Reddedildi</span>
+                            </p>
+
+                        }
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+
+                            <a href="@Url.Action("DuzenlenenEtkinliklerSohbeti", "EtkinlikMesaj", new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-yesil">
+                                <i class="fas fa-comments" style="color: white;"></i>
+                            </a>
+
+                            <a href="@Url.Action("EtkinlikGuncelle","Kullanicilar", new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo">
+                                <i class="fas fa-user"></i> Güncelle
+                            </a>
+                            <a href="@Url.Action("EtkinlikDetay","Kullanicilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black">
+                                <i class="fas fa-eye"></i> Detay
+                            </a>
+                            <a href="@Url.Action("KullaniciDuzenlenenKatilimcilar","Katilimcilar",new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-bordo">
+                                <i class="fas fa-user"></i> Katılımcılar
+                            </a>
+                            <a href="@Url.Action("EtkinlikSil","Kullanicilar", new { etkinlikID = etkinlik.EtkinlikID })" class="btn btn-sm btn-black" onclick="return confirm('Bu etkinliği silmek istediğinizden emin misiniz?');">
+                                <i class="fas fa-trash-alt"></i> Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .card-img-top {
+        background-size: cover;
+        background-position: center;
+        height: 250px; 
+        border-radius: 5px;
+    }
+
+    .card-footer {
+        padding: 15px;
+    }
+
+    .d-flex {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center; 
+        gap: 5px; 
+    }
+
+    .btn-bordo {
+        background-color: #430202;
+        color: white;
+    }
+
+        .btn-bordo:hover {
+            background-color: #5b0f14;
+            color: white;
+        }
+
+    .btn-white {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #430202;
+            border: 2px solid #5b0f14;
+        }
+
+    .btn-black {
+        background-color: #212529;
+        color: white;
+    }
+
+        .btn-black:hover {
+            background-color: #343a40;
+            color: white;
+        }
+
+    .btn-outline-bordo {
+        background-color: white;
+        color: #430202;
+        border: 2px solid #430202;
+    }
+
+        .btn-outline-bordo:hover {
+            background-color: #430202;
+            color: white;
+            border: 2px solid #5b0f14;
+        }
+    .btn-yesil {
+        background-color: #3A6351;
+        color: white;
+    }
+
+        .btn-yesil:hover {
+            background-color: #2E5042;
+            color: white;
+        }
+</style>
