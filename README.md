@@ -1,1 +1,1 @@
-📄 [Tüm Raporu Görüntüle (PDF)](doc/rapor.pdf)
+📄 [Tüm Raporu Görüntüle (PDF)](doc/Rapor.pdf)
